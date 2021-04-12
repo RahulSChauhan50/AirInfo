@@ -1,0 +1,9 @@
+npm i axios
+npm i react-native-svg-charts
+npm i react-native-svg
+npm i d3-shape
+npm i react-native-vector-icons
+npm install @react-navigation/native
+npm i react-native-linear-gradient
+npm i moment
+npm i d3-scale
