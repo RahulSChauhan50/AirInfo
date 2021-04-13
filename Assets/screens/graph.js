@@ -4,7 +4,6 @@ import {Grid, LineChart, XAxis, YAxis} from 'react-native-svg-charts';
 import {curveNatural} from 'd3-shape';
 import {scaleTime} from 'd3-scale';
 import {Circle, Path} from 'react-native-svg';
-import TokenFile from '../../AirQualityToken';
 import axios from 'axios';
 import LinearGradient from 'react-native-linear-gradient';
 import moment from 'moment';
@@ -25,8 +24,7 @@ class Graph extends Component {
         .get(
           'https://api.waqi.info/feed/' +
             this.state.cityInput +
-            '/?token=' +
-            TokenFile.Token,
+            '/?token=5402f0fa4924f8c14f4a6f35148f8d9cfb9e850a',
         )
         .then(res => {
           this.setState({data: res.data.data, status: res.data.status});
