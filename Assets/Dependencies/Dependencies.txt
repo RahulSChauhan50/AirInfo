@@ -7,3 +7,4 @@ npm install @react-navigation/native
 npm i react-native-linear-gradient
 npm i moment
 npm i d3-scale
+npm install react-native-paper
