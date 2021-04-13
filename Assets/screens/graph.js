@@ -1,5 +1,12 @@
 import React, {Component} from 'react';
-import {View, StyleSheet, Text, ScrollView, TextInput} from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Text,
+  ScrollView,
+  TextInput,
+  ActivityIndicator,
+} from 'react-native';
 import {Grid, LineChart, XAxis, YAxis} from 'react-native-svg-charts';
 import {curveNatural} from 'd3-shape';
 import {scaleTime} from 'd3-scale';
@@ -8,19 +15,39 @@ import axios from 'axios';
 import LinearGradient from 'react-native-linear-gradient';
 import moment from 'moment';
 import {connect} from 'react-redux';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import {logoutAction} from '../Redux/index';
+import {Snackbar} from 'react-native-paper';
 
 class Graph extends Component {
   constructor(props) {
     super(props);
     this.state = {
       data: null,
-      cityInput: 'shanghai',
+      cityInput: '',
       status: 'error',
+      isLoading: false,
+      visibleSnackbar: false,
+      aqi: null,
     };
   }
 
+  logoutFunction = () => {
+    this.props.logoutAction();
+    this.props.navigation.navigate('Login');
+  };
+
+  onToggleSnackBar = () => {
+    this.setState({visibleSnackbar: true});
+  };
+
+  onDismissSnackBar = () => {
+    this.setState({visibleSnackbar: false});
+  };
+
   getAirQualityData = () => {
     if (this.state.cityInput.trim().length != 0) {
+      this.setState({isLoading: true});
       axios
         .get(
           'https://api.waqi.info/feed/' +
@@ -28,10 +55,17 @@ class Graph extends Component {
             '/?token=5402f0fa4924f8c14f4a6f35148f8d9cfb9e850a',
         )
         .then(res => {
-          this.setState({data: res.data.data, status: res.data.status});
+          this.setState({
+            data: res.data.data,
+            status: res.data.status,
+            aqi: res.data.data.aqi,
+          });
         })
         .catch(e => {
-          console.log(e);
+          this.onToggleSnackBar();
+        })
+        .then(() => {
+          this.setState({isLoading: false});
         });
     }
   };
@@ -59,7 +93,13 @@ class Graph extends Component {
         xAxisDateArray.push(this.state.data.forecast.daily.uvi[i].day);
         uv.push(this.state.data.forecast.daily.uvi[i].avg);
       }
-      var xAxisset = [...new Set(xAxisDateArray)];
+
+      var xAxisset = new Array();
+      for (var i = 0; i < xAxisDateArray.length; i++) {
+        if (xAxisset.indexOf(xAxisDateArray[i]) === -1) {
+          xAxisset.push(xAxisDateArray[i]);
+        }
+      }
       var xAxisDate = new Array();
       for (var i = 0; i < xAxisset.length; i++) {
         xAxisDate.push({date: xAxisset[i]});
@@ -70,7 +110,7 @@ class Graph extends Component {
     const data = [
       {
         data: oxygen,
-        svg: {stroke: '#99d98c'},
+        svg: {stroke: '#21143F'},
       },
       {
         data: pmten,
@@ -86,6 +126,11 @@ class Graph extends Component {
       },
     ];
 
+    let weekday = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][
+      new Date().getDay()
+    ];
+    var time = moment().utcOffset('+05:30').format('hh:mm a');
+    var Ctime = time.toUpperCase();
     const axesSvg = {fontSize: 10, fill: '#0096c7'};
     const verticalContentInset = {top: 10, bottom: 10};
     const xAxisHeight = 30;
@@ -143,28 +188,132 @@ class Graph extends Component {
     return (
       <View style={styles.mainContainer}>
         <LinearGradient colors={['#f0efeb', '#98c1d9']} style={{flex: 1}}>
-          <View style={{alignItems: 'center'}}>
-            <TextInput
-              placeholder="Enter City"
-              style={{borderBottomWidth: 2}}
-              returnKeyType="go"
-              onChangeText={e => this.setState({cityInput: e})}
-              onSubmitEditing={() => {
-                this.getAirQualityData();
-              }}
-            />
+          <View style={{flex: 1}}>
+            <View
+              style={{
+                marginTop: 30,
+              }}>
+              <Text
+                style={{
+                  fontSize: 25,
+                  fontFamily: 'verdana',
+                  marginLeft: 20,
+                  fontWeight: '600',
+                  alignSelf: 'flex-start',
+                }}>
+                Hi, {this.props.username !== null ? this.props.username : ''}
+              </Text>
+              <Icon
+                style={{alignSelf: 'flex-end', marginTop: -30, marginRight: 20}}
+                name="logout"
+                size={35}
+                color="#000"
+                onPress={() => {
+                  this.logoutFunction();
+                }}
+              />
+            </View>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'center',
+                marginTop: 50,
+              }}>
+              <Icon
+                style={{marginTop: 15}}
+                name="map-marker"
+                size={25}
+                color="black"
+              />
+              <TextInput
+                placeholder="Enter  City"
+                style={{
+                  borderBottomWidth: 1,
+                  borderStyle: 'dashed',
+                  paddingBottom: -10,
+                  fontSize: 18,
+                }}
+                returnKeyType="go"
+                onChangeText={e => this.setState({cityInput: e})}
+                onSubmitEditing={() => {
+                  this.getAirQualityData();
+                }}
+              />
+            </View>
+            {this.state.aqi !== null ? (
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  marginTop: 30,
+                }}>
+                <Text
+                  style={{
+                    fontSize: 18,
+                    fontWeight: '600',
+                    alignSelf: 'center',
+                  }}>
+                  AQI :
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 35,
+                    fontWeight: '800',
+                    alignSelf: 'center',
+                    marginLeft: 10,
+                  }}>
+                  {this.state.aqi}
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 20,
+                    fontWeight: '800',
+                    marginBottom: 30,
+                    marginLeft: 10,
+                  }}>
+                  ppm | ppb
+                </Text>
+                <Icon
+                  style={{alignSelf: 'center', marginLeft: 20}}
+                  name="weather-snowy-heavy"
+                  size={40}
+                  color="black"
+                />
+              </View>
+            ) : (
+              <View></View>
+            )}
+            <Text
+              style={{
+                marginTop: 30,
+                alignSelf: 'center',
+                fontSize: 25,
+                fontWeight: '600',
+              }}>
+              {weekday} , {Ctime}
+            </Text>
           </View>
-          <View style={{flex: 1, justifyContent: 'flex-end'}}>
+          <View
+            style={{
+              flex: 1,
+              justifyContent: 'flex-end',
+              marginBottom: 30,
+            }}>
             {this.state.status == 'ok' ? (
-              <View style={{flexDirection: 'row', height: 200}}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  height: 250,
+                  marginLeft: 10,
+                }}>
                 <YAxis
                   data={[-100, 100]}
                   style={{marginBottom: xAxisHeight}}
-                  contentInset={verticalContentInset}
+                  contentInset={{top: 10, bottom: 10, left: 5, right: 5}}
                   svg={axesSvg}
-                  formatLabel={value => `${value}ºC`}
+                  formatLabel={value => `${value}`}
                 />
-                <View style={{flex: 1, marginLeft: 10}}>
+                <View style={{flex: 1, marginLeft: 5}}>
                   <ScrollView
                     contentContainerStyle={{paddingHorizontal: 15}}
                     horizontal={true}>
@@ -172,7 +321,7 @@ class Graph extends Component {
                       <LineChart
                         style={{flex: 1, width: xAxisset.length * 100}}
                         data={data}
-                        contentInset={verticalContentInset}
+                        contentInset={{top: 10, bottom: 10, left: 5, right: 5}}
                         svg={{strokeWidth: 2}}
                         curve={curveNatural}
                         xScale={scaleTime}>
@@ -191,7 +340,7 @@ class Graph extends Component {
                         formatLabel={(value, index) =>
                           moment(xAxisDate[index].date).format('YYYY-MM-DD')
                         }
-                        contentInset={{left: 10, right: 10}}
+                        contentInset={{left: 30, right: 30}}
                         svg={axesSvg}
                       />
                     </View>
@@ -199,30 +348,74 @@ class Graph extends Component {
                 </View>
               </View>
             ) : (
-              <Text>No data to display</Text>
+              <Text style={{marginLeft: 20}}>No data to display</Text>
             )}
           </View>
-          <View style={{flexDirection: 'row'}}>
+          <View
+            style={{
+              flexDirection: 'row',
+              marginBottom: 20,
+
+              justifyContent: 'center',
+            }}>
             <View
               style={{
                 width: 15,
                 height: 15,
-                backgroundColor: '#1d3557',
+                backgroundColor: '#ef476f',
                 borderRadius: 15,
+                marginRight: 10,
               }}
             />
-            <Text>Line 1</Text>
+            <Text>PM-25</Text>
             <View
               style={{
                 width: 15,
                 height: 15,
-                backgroundColor: '#457b9d',
+                backgroundColor: '#3d5a80',
                 borderRadius: 15,
+                marginLeft: 20,
+                marginRight: 10,
               }}
             />
-            <Text>Line 2</Text>
+            <Text>PM-10</Text>
+            <View
+              style={{
+                width: 15,
+                height: 15,
+                backgroundColor: '#21143F',
+                borderRadius: 15,
+                marginRight: 10,
+                marginLeft: 20,
+              }}
+            />
+            <Text>Ozone</Text>
+            <View
+              style={{
+                width: 15,
+                height: 15,
+                backgroundColor: '#ffd60a',
+                borderRadius: 15,
+                marginLeft: 20,
+                marginRight: 10,
+              }}
+            />
+            <Text>UVI</Text>
           </View>
         </LinearGradient>
+        <ActivityIndicator
+          size="large"
+          color="#00BFFF"
+          style={styles.activityindicator}
+          animating={this.state.isLoading}
+        />
+        <Snackbar
+          visible={this.state.visibleSnackbar}
+          onDismiss={() => {
+            this.onDismissSnackBar();
+          }}>
+          Something Went Wrong !
+        </Snackbar>
       </View>
     );
   }
@@ -231,6 +424,15 @@ class Graph extends Component {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
+  },
+  activityindicator: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
@@ -241,5 +443,12 @@ const mapStateToProps = state => {
     username: state.username,
   };
 };
+const mapDispatchToProps = dispatch => {
+  return {
+    logoutAction: () => {
+      dispatch(logoutAction());
+    },
+  };
+};
 
-export default connect(mapStateToProps, null)(Graph);
+export default connect(mapStateToProps, mapDispatchToProps)(Graph);
