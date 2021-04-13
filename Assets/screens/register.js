@@ -2,6 +2,8 @@ import React, {Component} from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import {TextInput, Button} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import {connect} from 'react-redux';
+import {registerAction} from '../Redux/index';
 class Register extends Component {
   constructor() {
     super();
@@ -72,13 +74,15 @@ class Register extends Component {
             }}
             value={this.state.textPass}
             onChangeText={val => this.setState({textPass: val})}
-          />
-          <Icon
-            style={styles.iconEye}
-            name={this.state.iconName}
-            size={26}
-            color="black"
-            onPress={() => this.onIconPress()}
+            right={
+              <TextInput.Icon
+                name={this.state.iconName}
+                size={26}
+                onPress={() => {
+                  this.onIconPress();
+                }}
+              />
+            }
           />
         </View>
         <Button
@@ -126,7 +130,6 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     paddingLeft: 0,
   },
-  iconEye: {position: 'absolute', right: 45, top: 31},
   textOr: {
     fontSize: 20,
     color: 'black',
@@ -160,4 +163,12 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Register;
+const mapDispatchToProps = dispatch => {
+  return {
+    registerAction: params => {
+      dispatch(registerAction(params));
+    },
+  };
+};
+
+export default connect(null, mapDispatchToProps)(Register);

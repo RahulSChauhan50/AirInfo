@@ -8,3 +8,6 @@ npm i react-native-linear-gradient
 npm i moment
 npm i d3-scale
 npm install react-native-paper
+npm install @react-navigation/stack
+npm install redux 
+npm install react-redux

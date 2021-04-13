@@ -1,7 +1,10 @@
+import axios from 'axios';
 import React, {Component} from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import {View, Text, StyleSheet, ActivityIndicator} from 'react-native';
 import {TextInput, Button} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import {connect} from 'react-redux';
+import {loginAction} from '../Redux/index';
 class Login extends Component {
   constructor() {
     super();
@@ -10,17 +13,43 @@ class Login extends Component {
       textPass: '',
       secureTextEntry: true,
       iconName: 'eye',
+      isLoading: false,
     };
   }
   onIconPress = () => {
-    let iconName = this.state.secureTextEntry ? 'eye-off' : 'eye';
-
-    this.setState({
-      secureTextEntry: !this.state.secureTextEntry,
-      iconName: iconName,
-    });
+    if (this.state.secureTextEntry) {
+      this.setState({secureTextEntry: false, iconName: 'eye-off'});
+    } else {
+      this.setState({secureTextEntry: true, iconName: 'eye'});
+    }
   };
+
+  loginFunction = () => {
+    var myemail = this.state.textEmail.trim();
+    var mypassword = this.state.textPass.trim();
+
+    if (myemail.length > 0 && mypassword.length > 0) {
+      this.setState({isLoading: true});
+      axios
+        .post('https://calm-garden-34154.herokuapp.com/api/login', {
+          email: myemail,
+          password: mypassword,
+        })
+        .then(res => {
+          this.props.loginAction(res.data.userData, mypassword);
+          //this.props.navigation.navigate('Register');
+        })
+        .catch(e => {
+          console.log(e);
+        })
+        .then(this.setState({isLoading: false}));
+    }
+  };
+
   render() {
+    console.log(this.props.email);
+    console.log(this.props.username);
+    console.log(this.props.password);
     return (
       <View style={styles.mainCointainer}>
         <Icon
@@ -59,23 +88,39 @@ class Login extends Component {
             }}
             value={this.state.textPass}
             onChangeText={val => this.setState({textPass: val})}
-          />
-          <Icon
-            style={styles.iconEye}
-            name={this.state.iconName}
-            size={26}
-            color="black"
-            onPress={() => this.onIconPress()}
+            right={
+              <TextInput.Icon
+                name={this.state.iconName}
+                size={26}
+                onPress={() => {
+                  this.onIconPress();
+                }}
+              />
+            }
           />
         </View>
+        <ActivityIndicator
+          size="large"
+          color="blue"
+          animating={this.state.isLoading}
+        />
         <Button
           style={styles.btnLogin}
           mode="contained"
           color="#00B2FF"
           uppercase={false}
           labelStyle={{color: 'white', fontSize: 18}}
-          onPress={() => this.props.navigation.navigate('Graph')}>
+          onPress={() => this.loginFunction()}>
           sign in
+        </Button>
+        <Button
+          style={styles.registerbtn}
+          mode="outlined"
+          color="black"
+          uppercase={false}
+          labelStyle={{color: 'black', fontSize: 15}}
+          onPress={() => this.props.navigation.navigate('Register')}>
+          Don't have account? Create
         </Button>
       </View>
     );
@@ -108,7 +153,6 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     paddingLeft: 0,
   },
-  iconEye: {position: 'absolute', right: 45, top: 31},
   textHeader: {
     fontSize: 30,
     color: 'black',
@@ -129,6 +173,28 @@ const styles = StyleSheet.create({
   icon: {
     alignSelf: 'center',
   },
+  registerbtn: {
+    marginVertical: 20,
+    borderTopLeftRadius: 15,
+    borderColor: '#00BFFF',
+    borderWidth: 2,
+  },
 });
 
-export default Login;
+const mapStateToProps = state => {
+  return {
+    email: state.email,
+    password: state.password,
+    username: state.username,
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    loginAction: (param1, param2) => {
+      dispatch(loginAction(param1, param2));
+    },
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Login);
