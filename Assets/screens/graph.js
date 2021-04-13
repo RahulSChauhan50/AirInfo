@@ -7,6 +7,7 @@ import {Circle, Path} from 'react-native-svg';
 import axios from 'axios';
 import LinearGradient from 'react-native-linear-gradient';
 import moment from 'moment';
+import {connect} from 'react-redux';
 
 class Graph extends Component {
   constructor(props) {
@@ -59,9 +60,9 @@ class Graph extends Component {
         uv.push(this.state.data.forecast.daily.uvi[i].avg);
       }
       var xAxisset = [...new Set(xAxisDateArray)];
-      var xAxisDate=new Array();
-      for(var i=0;i<xAxisset.length;i++){
-        xAxisDate.push({date:xAxisset[i]})
+      var xAxisDate = new Array();
+      for (var i = 0; i < xAxisset.length; i++) {
+        xAxisDate.push({date: xAxisset[i]});
       }
     }
 
@@ -233,4 +234,12 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Graph;
+const mapStateToProps = state => {
+  return {
+    email: state.email,
+    password: state.password,
+    username: state.username,
+  };
+};
+
+export default connect(mapStateToProps, null)(Graph);

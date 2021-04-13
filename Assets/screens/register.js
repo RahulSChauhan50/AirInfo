@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
-import {View, Text, StyleSheet} from 'react-native';
-import {TextInput, Button} from 'react-native-paper';
+import {View, Text, StyleSheet, ActivityIndicator} from 'react-native';
+import {TextInput, Button, Snackbar} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {connect} from 'react-redux';
 import {registerAction} from '../Redux/index';
+import axios from 'axios';
 class Register extends Component {
   constructor() {
     super();
@@ -11,8 +12,11 @@ class Register extends Component {
       textUser: '',
       textEmail: '',
       textPass: '',
+      textPassConfirm: '',
       secureTextEntry: true,
       iconName: 'eye',
+      visibleSnackbar: false,
+      isLoading: false,
     };
   }
   onIconPress = () => {
@@ -22,6 +26,51 @@ class Register extends Component {
       secureTextEntry: !this.state.secureTextEntry,
       iconName: iconName,
     });
+  };
+
+  onToggleSnackBar = () => {
+    this.setState({visibleSnackbar: true});
+  };
+
+  onDismissSnackBar = () => {
+    this.setState({visibleSnackbar: false});
+  };
+
+  registerFunction = () => {
+    var myemail = this.state.textEmail.trim();
+    var mypassword = this.state.textPass.trim();
+    var myuser = this.state.textUser.trim();
+    var mypasswordconfirm = this.state.textPassConfirm.trim();
+
+    if (
+      myemail.length > 0 &&
+      mypassword.length > 0 &&
+      myuser.length > 0 &&
+      mypasswordconfirm.length > 0
+    ) {
+      if (mypassword === mypasswordconfirm) {
+        this.setState({isLoading: true});
+        axios
+          .post('https://calm-garden-34154.herokuapp.com/api/register', {
+            email: myemail,
+            password: mypassword,
+            user_name: myuser,
+            password_confirm: mypasswordconfirm,
+          })
+          .then(res => {
+            this.props.registerAction(myemail, mypassword, myuser);
+            this.props.navigation.navigate('Graph');
+          })
+          .catch(e => {
+            this.onToggleSnackBar();
+          })
+          .then(() => {
+            this.setState({isLoading: false});
+          });
+      } else {
+        this.onToggleSnackBar();
+      }
+    }
   };
   render() {
     return (
@@ -60,38 +109,56 @@ class Register extends Component {
           value={this.state.textEmail}
           onChangeText={val => this.setState({textEmail: val})}
         />
-        <View style={styles.password}>
-          <TextInput
-            style={styles.textInputPass}
-            label="Password"
-            mode="outlined"
-            secureTextEntry={this.state.secureTextEntry}
-            theme={{
-              colors: {
-                primary: '#00BFFF',
-                underlineColor: 'transparent',
-              },
-            }}
-            value={this.state.textPass}
-            onChangeText={val => this.setState({textPass: val})}
-            right={
-              <TextInput.Icon
-                name={this.state.iconName}
-                size={26}
-                onPress={() => {
-                  this.onIconPress();
-                }}
-              />
-            }
-          />
-        </View>
+
+        <TextInput
+          style={styles.textInputPass}
+          label="Password"
+          mode="outlined"
+          secureTextEntry={this.state.secureTextEntry}
+          theme={{
+            colors: {
+              primary: '#00BFFF',
+              underlineColor: 'transparent',
+            },
+          }}
+          value={this.state.textPass}
+          onChangeText={val => this.setState({textPass: val})}
+          right={
+            <TextInput.Icon
+              name={this.state.iconName}
+              size={26}
+              onPress={() => {
+                this.onIconPress();
+              }}
+            />
+          }
+        />
+        <TextInput
+          style={styles.inputContainer}
+          label="Confirm Password"
+          mode="outlined"
+          theme={{
+            colors: {
+              primary: '#00BFFF',
+              underlineColor: 'transparent',
+            },
+          }}
+          value={this.state.textPassConfirm}
+          onChangeText={val => this.setState({textPassConfirm: val})}
+        />
+        <ActivityIndicator
+          size="large"
+          color="#00BFFF"
+          style={styles.activityindicator}
+          animating={this.state.isLoading}
+        />
         <Button
           style={styles.btnSignup}
           mode="contained"
           color="#00BFFF"
           uppercase={false}
           labelStyle={{color: 'white', fontSize: 18}}
-          onPress={() => this.props.navigation.navigate('Login')}>
+          onPress={() => this.registerFunction()}>
           sign up using email
         </Button>
         <Text style={styles.textOr}>or </Text>
@@ -102,9 +169,16 @@ class Register extends Component {
           color="black"
           uppercase={false}
           labelStyle={{color: 'black', fontSize: 15}}
-          onPress={() => console.log('pressed')}>
+          onPress={() => this.props.navigation.navigate('Login')}>
           Existing User ?
         </Button>
+        <Snackbar
+          visible={this.state.visibleSnackbar}
+          onDismiss={() => {
+            this.onDismissSnackBar();
+          }}>
+          Something Went Wrong !
+        </Snackbar>
       </View>
     );
   }
@@ -118,17 +192,6 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     marginVertical: 10,
-  },
-  password: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
-  textInputPass: {
-    flex: 1,
-    paddingTop: 10,
-    paddingRight: 10,
-    paddingBottom: 10,
-    paddingLeft: 0,
   },
   textOr: {
     fontSize: 20,
@@ -161,12 +224,21 @@ const styles = StyleSheet.create({
   icon: {
     alignSelf: 'center',
   },
+  activityindicator: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
 
 const mapDispatchToProps = dispatch => {
   return {
-    registerAction: params => {
-      dispatch(registerAction(params));
+    registerAction: (param1, param2, param3) => {
+      dispatch(registerAction(param1, param2, param3));
     },
   };
 };

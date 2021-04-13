@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React, {Component} from 'react';
 import {View, Text, StyleSheet, ActivityIndicator} from 'react-native';
-import {TextInput, Button} from 'react-native-paper';
+import {TextInput, Button, Snackbar} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {connect} from 'react-redux';
 import {loginAction} from '../Redux/index';
@@ -14,6 +14,7 @@ class Login extends Component {
       secureTextEntry: true,
       iconName: 'eye',
       isLoading: false,
+      visibleSnackbar: false,
     };
   }
   onIconPress = () => {
@@ -22,6 +23,14 @@ class Login extends Component {
     } else {
       this.setState({secureTextEntry: true, iconName: 'eye'});
     }
+  };
+
+  onToggleSnackBar = () => {
+    this.setState({visibleSnackbar: true});
+  };
+
+  onDismissSnackBar = () => {
+    this.setState({visibleSnackbar: false});
   };
 
   loginFunction = () => {
@@ -37,19 +46,18 @@ class Login extends Component {
         })
         .then(res => {
           this.props.loginAction(res.data.userData, mypassword);
-          //this.props.navigation.navigate('Register');
+          this.props.navigation.navigate('Graph');
         })
         .catch(e => {
-          console.log(e);
+          this.onToggleSnackBar();
         })
-        .then(this.setState({isLoading: false}));
+        .then(() => {
+          this.setState({isLoading: false});
+        });
     }
   };
 
   render() {
-    console.log(this.props.email);
-    console.log(this.props.username);
-    console.log(this.props.password);
     return (
       <View style={styles.mainCointainer}>
         <Icon
@@ -101,7 +109,8 @@ class Login extends Component {
         </View>
         <ActivityIndicator
           size="large"
-          color="blue"
+          color="#00BFFF"
+          style={styles.activityindicator}
           animating={this.state.isLoading}
         />
         <Button
@@ -122,6 +131,13 @@ class Login extends Component {
           onPress={() => this.props.navigation.navigate('Register')}>
           Don't have account? Create
         </Button>
+        <Snackbar
+          visible={this.state.visibleSnackbar}
+          onDismiss={() => {
+            this.onDismissSnackBar();
+          }}>
+          Something Went Wrong !
+        </Snackbar>
       </View>
     );
   }
@@ -178,6 +194,15 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 15,
     borderColor: '#00BFFF',
     borderWidth: 2,
+  },
+  activityindicator: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
