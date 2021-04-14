@@ -112,7 +112,7 @@ class Graph extends Component {
     const data = [
       {
         data: oxygen,
-        svg: {stroke: '#011740'},
+        svg: {stroke: '#219ebc'},
       },
       {
         data: pmten,
@@ -334,7 +334,6 @@ class Graph extends Component {
                         data={data}
                         contentInset={{top: 10, bottom: 10, left: 5, right: 5}}
                         svg={{strokeWidth: 2}}
-                        curve={curveNatural}
                         xScale={scaleTime}>
                         <Grid />
                         <Decorator />
@@ -404,7 +403,7 @@ class Graph extends Component {
               style={{
                 width: 15,
                 height: 15,
-                backgroundColor: '#011740',
+                backgroundColor: '#219ebc',
                 borderRadius: 15,
                 marginRight: 10,
                 marginLeft: 20,
