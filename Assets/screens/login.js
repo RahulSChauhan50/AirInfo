@@ -62,51 +62,65 @@ class Login extends Component {
       <View style={styles.mainCointainer}>
         <Icon
           style={styles.icon}
-          name="account-lock"
+          name="account-arrow-right"
           size={70}
-          color="#00BFFF"
+          color="white"
         />
-        <Text style={styles.textHeader}> sign in</Text>
+        <Text style={styles.textHeader}> Log In</Text>
         <Text style={styles.textWlcm}>WELCOME !</Text>
-        <Text style={styles.textDesc}>sign in to your account</Text>
+        <Text style={styles.textDesc}>log in to your account</Text>
         <TextInput
           style={styles.inputContainer}
-          label="Email"
+          label="Enter your email"
           mode="outlined"
+          color="white"
           theme={{
             colors: {
-              primary: '#00BFFF',
+              placeholder: 'white',
+              text: 'white',
+              primary: 'white',
               underlineColor: 'transparent',
+              background: '#026676',
             },
           }}
           value={this.state.textEmail}
           onChangeText={val => this.setState({textEmail: val})}
+          right={
+            <TextInput.Icon
+              name="email-multiple"
+              size={26}
+              color="white"
+            />
+          }
         />
-        <View style={styles.password}>
-          <TextInput
-            style={styles.textInputPass}
-            label="Password"
-            mode="outlined"
-            secureTextEntry={this.state.secureTextEntry}
-            theme={{
-              colors: {
-                primary: '#00BFFF',
-                underlineColor: 'transparent',
-              },
-            }}
-            value={this.state.textPass}
-            onChangeText={val => this.setState({textPass: val})}
-            right={
-              <TextInput.Icon
-                name={this.state.iconName}
-                size={26}
-                onPress={() => {
-                  this.onIconPress();
-                }}
-              />
-            }
-          />
-        </View>
+        <TextInput
+          style={styles.inputContainer}
+          label="Enter your password"
+          mode="outlined"
+          secureTextEntry={this.state.secureTextEntry}
+          theme={{
+            colors: {
+              placeholder: 'white',
+              text: 'white',
+              primary: 'white',
+              underlineColor: 'transparent',
+              background: '#026676',
+            },
+          }}
+          color="black"
+          value={this.state.textPass}
+          onChangeText={val => this.setState({textPass: val})}
+          right={
+            <TextInput.Icon
+              name={this.state.iconName}
+              size={26}
+              color="white"
+              onPress={() => {
+                this.onIconPress();
+              }}
+            />
+          }
+        />
         <ActivityIndicator
           size="large"
           color="#00BFFF"
@@ -116,12 +130,13 @@ class Login extends Component {
         <Button
           style={styles.btnLogin}
           mode="contained"
-          color="#00B2FF"
+          color="white"
           uppercase={false}
-          labelStyle={{color: 'white', fontSize: 18}}
+          labelStyle={{color: 'black', fontSize: 18}}
           onPress={() => this.loginFunction()}>
-          sign in
+          Log In
         </Button>
+        <Text style={styles.textOr}>or </Text>
         <Button
           style={styles.registerbtn}
           mode="outlined"
@@ -148,10 +163,13 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 50,
     paddingHorizontal: '10%',
+    backgroundColor: '#026676',
   },
   inputContainer: {
     marginTop: 20,
     borderRadius: 15,
+    backgroundColor: '#026676',
+    borderColor: 'black',
   },
   btnLogin: {
     marginTop: 40,
@@ -162,16 +180,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 20,
   },
-  textInputPass: {
-    flex: 1,
-    paddingTop: 10,
-    paddingRight: 10,
-    paddingBottom: 10,
-    paddingLeft: 0,
+  textOr: {
+    fontSize: 20,
+    color: 'white',
+    marginTop: 20,
+    fontWeight: 'bold',
+    alignSelf: 'center',
   },
   textHeader: {
     fontSize: 30,
-    color: 'black',
+    color: 'white',
     alignSelf: 'center',
     fontWeight: '800',
   },
@@ -181,10 +199,12 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     alignSelf: 'flex-start',
     fontFamily: 'verdana',
+    color: 'white',
   },
   textDesc: {
     alignSelf: 'flex-start',
     fontWeight: '400',
+    color: 'white',
   },
   icon: {
     alignSelf: 'center',
@@ -192,7 +212,7 @@ const styles = StyleSheet.create({
   registerbtn: {
     marginVertical: 20,
     borderTopLeftRadius: 15,
-    borderColor: '#00BFFF',
+    borderColor: 'white',
     borderWidth: 2,
   },
   activityindicator: {
@@ -206,14 +226,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = state => {
-  return {
-    email: state.email,
-    password: state.password,
-    username: state.username,
-  };
-};
-
 const mapDispatchToProps = dispatch => {
   return {
     loginAction: (param1, param2) => {
@@ -222,4 +234,4 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Login);
+export default connect(null, mapDispatchToProps)(Login);

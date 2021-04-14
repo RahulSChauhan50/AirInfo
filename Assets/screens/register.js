@@ -77,48 +77,70 @@ class Register extends Component {
       <View style={styles.mainCointainer}>
         <Icon
           style={styles.icon}
-          name="account-plus"
+          name="account-check"
           size={70}
-          color="#00BFFF"
+          color="white"
         />
         <Text style={styles.textHeader}>WELCOME !</Text>
         <Text style={styles.textdesc}>create a new account</Text>
         <TextInput
           style={styles.inputContainer}
-          label="Username"
+          label="Enter your name"
           mode="outlined"
           theme={{
             colors: {
-              primary: '#00BFFF',
+              placeholder: 'white',
+              text: 'white',
+              primary: 'white',
               underlineColor: 'transparent',
+              background: '#026676',
             },
           }}
+          right={
+            <TextInput.Icon
+              name="account"
+              size={26}
+              color="white"
+              onPress={() => {
+                this.onIconPress();
+              }}
+            />
+          }
           value={this.state.textUser}
           onChangeText={val => this.setState({textUser: val})}
         />
         <TextInput
           style={styles.inputContainer}
-          label="Email"
+          label="Enter a email"
           mode="outlined"
           theme={{
             colors: {
-              primary: '#00BFFF',
+              placeholder: 'white',
+              text: 'white',
+              primary: 'white',
               underlineColor: 'transparent',
+              background: '#026676',
             },
           }}
+          right={
+            <TextInput.Icon name="email-multiple" size={26} color="white" />
+          }
           value={this.state.textEmail}
           onChangeText={val => this.setState({textEmail: val})}
         />
 
         <TextInput
           style={styles.textInputPass}
-          label="Password"
+          label="Choose a Password"
           mode="outlined"
           secureTextEntry={this.state.secureTextEntry}
           theme={{
             colors: {
-              primary: '#00BFFF',
+              placeholder: 'white',
+              text: 'white',
+              primary: 'white',
               underlineColor: 'transparent',
+              background: '#026676',
             },
           }}
           value={this.state.textPass}
@@ -126,6 +148,7 @@ class Register extends Component {
           right={
             <TextInput.Icon
               name={this.state.iconName}
+              color="white"
               size={26}
               onPress={() => {
                 this.onIconPress();
@@ -137,10 +160,14 @@ class Register extends Component {
           style={styles.inputContainer}
           label="Confirm Password"
           mode="outlined"
+          secureTextEntry={true}
           theme={{
             colors: {
-              primary: '#00BFFF',
+              placeholder: 'white',
+              text: 'white',
+              primary: 'white',
               underlineColor: 'transparent',
+              background: '#026676',
             },
           }}
           value={this.state.textPassConfirm}
@@ -155,23 +182,13 @@ class Register extends Component {
         <Button
           style={styles.btnSignup}
           mode="contained"
-          color="#00BFFF"
+          color="white"
           uppercase={false}
-          labelStyle={{color: 'white', fontSize: 18}}
+          labelStyle={{color: 'black', fontSize: 18}}
           onPress={() => this.registerFunction()}>
           sign up using email
         </Button>
-        <Text style={styles.textOr}>or </Text>
 
-        <Button
-          style={styles.btnLogin}
-          mode="outlined"
-          color="black"
-          uppercase={false}
-          labelStyle={{color: 'black', fontSize: 15}}
-          onPress={() => this.props.navigation.navigate('Login')}>
-          Existing User ?
-        </Button>
         <Snackbar
           visible={this.state.visibleSnackbar}
           onDismiss={() => {
@@ -189,36 +206,25 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 30,
     paddingHorizontal: '10%',
+    backgroundColor: '#026676',
   },
   inputContainer: {
     marginVertical: 10,
-  },
-  textOr: {
-    fontSize: 20,
-    color: 'black',
-    marginTop: 20,
-    fontWeight: 'bold',
-    alignSelf: 'center',
   },
   btnSignup: {
     marginTop: 30,
     borderRadius: 15,
   },
-  btnLogin: {
-    marginVertical: 20,
-    borderTopLeftRadius: 15,
-    borderColor: '#00BFFF',
-    borderWidth: 2,
-  },
   textHeader: {
     fontSize: 30,
-    color: 'black',
+    color: 'white',
     alignSelf: 'center',
     fontWeight: 'bold',
   },
   textdesc: {
     fontSize: 20,
     marginTop: 10,
+    color: 'white',
     alignSelf: 'flex-start',
   },
   icon: {
