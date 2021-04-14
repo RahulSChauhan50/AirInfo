@@ -6,6 +6,7 @@ import {
   ScrollView,
   TextInput,
   ActivityIndicator,
+  StatusBar,
 } from 'react-native';
 import {Grid, LineChart, XAxis, YAxis} from 'react-native-svg-charts';
 import {curveNatural} from 'd3-shape';
@@ -16,6 +17,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import moment from 'moment';
 import {connect} from 'react-redux';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Mat from 'react-native-vector-icons/MaterialIcons';
 import {logoutAction} from '../Redux/index';
 import {Snackbar} from 'react-native-paper';
 
@@ -110,19 +112,19 @@ class Graph extends Component {
     const data = [
       {
         data: oxygen,
-        svg: {stroke: '#21143F'},
+        svg: {stroke: '#011740'},
       },
       {
         data: pmten,
-        svg: {stroke: '#3d5a80'},
-      },
-      {
-        data: pmtweFive,
         svg: {stroke: '#ef476f'},
       },
       {
-        data: uv,
+        data: pmtweFive,
         svg: {stroke: '#ffd60a'},
+      },
+      {
+        data: uv,
+        svg: {stroke: '#00F700'},
       },
     ];
 
@@ -131,7 +133,7 @@ class Graph extends Component {
     ];
     var time = moment().utcOffset('+05:30').format('hh:mm a');
     var Ctime = time.toUpperCase();
-    const axesSvg = {fontSize: 10, fill: '#0096c7'};
+    const axesSvg = {fontSize: 10, fill: '#f4f3ee'};
     const verticalContentInset = {top: 10, bottom: 10};
     const xAxisHeight = 30;
 
@@ -187,7 +189,8 @@ class Graph extends Component {
 
     return (
       <View style={styles.mainContainer}>
-        <LinearGradient colors={['#f0efeb', '#98c1d9']} style={{flex: 1}}>
+        <StatusBar backgroundColor={'#22223b'} barStyle="light-content" />
+        <LinearGradient colors={['#4a4e69', '#22223b']} style={{flex: 1}}>
           <View style={{flex: 1}}>
             <View
               style={{
@@ -199,15 +202,16 @@ class Graph extends Component {
                   fontFamily: 'verdana',
                   marginLeft: 20,
                   fontWeight: '600',
+                  color: 'white',
                   alignSelf: 'flex-start',
                 }}>
                 Hi, {this.props.username !== null ? this.props.username : ''}
               </Text>
-              <Icon
+              <Mat
                 style={{alignSelf: 'flex-end', marginTop: -30, marginRight: 20}}
                 name="logout"
                 size={35}
-                color="#000"
+                color="white"
                 onPress={() => {
                   this.logoutFunction();
                 }}
@@ -223,16 +227,19 @@ class Graph extends Component {
                 style={{marginTop: 15}}
                 name="map-marker"
                 size={25}
-                color="black"
+                color="white"
               />
               <TextInput
                 placeholder="Enter  City"
                 style={{
                   borderBottomWidth: 1,
                   borderStyle: 'dashed',
+                  borderColor: 'white',
                   paddingBottom: -10,
                   fontSize: 18,
+                  color: 'white',
                 }}
+                placeholderTextColor="white"
                 returnKeyType="go"
                 onChangeText={e => this.setState({cityInput: e})}
                 onSubmitEditing={() => {
@@ -252,6 +259,7 @@ class Graph extends Component {
                     fontSize: 18,
                     fontWeight: '600',
                     alignSelf: 'center',
+                    color: 'white',
                   }}>
                   AQI :
                 </Text>
@@ -261,6 +269,7 @@ class Graph extends Component {
                     fontWeight: '800',
                     alignSelf: 'center',
                     marginLeft: 10,
+                    color: 'white',
                   }}>
                   {this.state.aqi}
                 </Text>
@@ -270,14 +279,15 @@ class Graph extends Component {
                     fontWeight: '800',
                     marginBottom: 30,
                     marginLeft: 10,
+                    color: 'white',
                   }}>
                   ppm | ppb
                 </Text>
                 <Icon
                   style={{alignSelf: 'center', marginLeft: 20}}
-                  name="weather-snowy-heavy"
+                  name="weather-partly-snowy-rainy"
                   size={40}
-                  color="black"
+                  color="white"
                 />
               </View>
             ) : (
@@ -289,6 +299,7 @@ class Graph extends Component {
                 alignSelf: 'center',
                 fontSize: 25,
                 fontWeight: '600',
+                color: 'white',
               }}>
               {weekday} , {Ctime}
             </Text>
@@ -348,7 +359,15 @@ class Graph extends Component {
                 </View>
               </View>
             ) : (
-              <Text style={{marginLeft: 20}}>No data to display</Text>
+              <Text
+                style={{
+                  marginLeft: 20,
+                  alignSelf: 'center',
+                  fontSize: 18,
+                  color: '#f2e9e4',
+                }}>
+                No data to display
+              </Text>
             )}
           </View>
           <View
@@ -365,31 +384,10 @@ class Graph extends Component {
                 backgroundColor: '#ef476f',
                 borderRadius: 15,
                 marginRight: 10,
+                marginTop: 3,
               }}
             />
-            <Text>PM-25</Text>
-            <View
-              style={{
-                width: 15,
-                height: 15,
-                backgroundColor: '#3d5a80',
-                borderRadius: 15,
-                marginLeft: 20,
-                marginRight: 10,
-              }}
-            />
-            <Text>PM-10</Text>
-            <View
-              style={{
-                width: 15,
-                height: 15,
-                backgroundColor: '#21143F',
-                borderRadius: 15,
-                marginRight: 10,
-                marginLeft: 20,
-              }}
-            />
-            <Text>Ozone</Text>
+            <Text style={{color: '#f2e9e4'}}>PM-25</Text>
             <View
               style={{
                 width: 15,
@@ -398,9 +396,34 @@ class Graph extends Component {
                 borderRadius: 15,
                 marginLeft: 20,
                 marginRight: 10,
+                marginTop: 3,
               }}
             />
-            <Text>UVI</Text>
+            <Text style={{color: '#f2e9e4'}}>PM-10</Text>
+            <View
+              style={{
+                width: 15,
+                height: 15,
+                backgroundColor: '#011740',
+                borderRadius: 15,
+                marginRight: 10,
+                marginLeft: 20,
+                marginTop: 3,
+              }}
+            />
+            <Text style={{color: '#f2e9e4'}}>Ozone</Text>
+            <View
+              style={{
+                width: 15,
+                height: 15,
+                backgroundColor: '#00F700',
+                borderRadius: 15,
+                marginLeft: 20,
+                marginTop: 3,
+                marginRight: 10,
+              }}
+            />
+            <Text style={{color: '#f2e9e4'}}>UVI</Text>
           </View>
         </LinearGradient>
         <ActivityIndicator
