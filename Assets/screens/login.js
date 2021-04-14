@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, {Component} from 'react';
-import {View, Text, StyleSheet, ActivityIndicator} from 'react-native';
+import {View, Text, StyleSheet, ActivityIndicator,StatusBar} from 'react-native';
 import {TextInput, Button, Snackbar} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {connect} from 'react-redux';
@@ -60,6 +60,10 @@ class Login extends Component {
   render() {
     return (
       <View style={styles.mainCointainer}>
+        <StatusBar
+          backgroundColor={'#264653'}
+          barStyle="light-content"
+        />
         <Icon
           style={styles.icon}
           name="account-arrow-right"
